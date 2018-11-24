@@ -9,8 +9,11 @@ import os
 
 #Setup database connection
 from pymongo import MongoClient
-client = MongoClient('localhost', 27017)
-db = client['rosa_database']
+
+db_uri = os.getenv("MONGODB_URI", 'mongodb://localhost:27017/rosa_database')
+
+client = MongoClient(db_uri)
+db = client.get_database()
 complaint = db['complaint']
 
 
@@ -98,4 +101,5 @@ if __name__ == '__main__':
     # This is used when running locally only. When deploying to Google App
     # Engine, a webserver process such as Gunicorn will serve the app. This
     # can be configured by adding an `entrypoint` to app.yaml.
-    app.run(host='0.0.0.0', port=8080, debug=True)
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host='0.0.0.0', port=port, debug=True)
